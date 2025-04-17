@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Image Service</title>
+    <meta name="description" content="home page">
+</head>
+
+<body>
+    <h2>Fetch and Save Random Images of Cats or Dogs</h2>
+    <form id="imageForm">
+        <p>Choose an animal:</p>
+        <input type="radio" id="cat" name="imageType" value="cat"/>
+        <label for="cat">cat</label><br>
+        <input type="radio" id="dog" name="imageType" value="dog"/>
+        <label for="dog">dog</label><br><br>
+
+        <label for="count">How Many:</label>
+        <input type="number" id="count" name="count" value="1" min="1"/><br><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Get Latest Saved Image</h2>
+    <form id="fetchForm">
+        <button type="submit">Get Latest Saved</button><br>
+    </form>
+</body>
+
+<div id="result"></div>
+
+<script>
+  document.getElementById("imageForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const type = document.querySelector('input[name="imageType"]:checked')?.value;
+    const count = document.getElementById("count").value;
+
+    const response = await fetch(`/api/images?imageType=${type}&count=${count}`, {method: "POST"});
+    const images = await response.json();
+
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = "";
+
+    const titleText = document.createTextNode("Fetched and Saved Images:");
+    resultDiv.appendChild(titleText);
+    resultDiv.appendChild(document.createElement("br"));
+
+    images.forEach(img => {
+      const imageElement = document.createElement("img");
+      imageElement.src = img.url;
+      imageElement.alt = "Fetched animal";
+      imageElement.style.maxWidth = "200px";
+      imageElement.style.margin = "10px";
+      resultDiv.appendChild(imageElement);
+    });
+  });
+
+  document.getElementById("fetchForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const response = await fetch(`/api/images/latest`, {method : "GET"});
+    const image = await response.json();
+
+    const resultDiv = document.getElementById("result");
+    resultDiv.innerHTML = "";
+
+    const titleText = document.createTextNode("Latest Image:");
+    resultDiv.appendChild(titleText);
+    resultDiv.appendChild(document.createElement("br"));
+
+    const imageElement = document.createElement("img");
+    imageElement.src = image.url;
+    imageElement.alt = "Fetched animal";
+    imageElement.style.maxWidth = "200px";
+    imageElement.style.margin = "10px";
+    resultDiv.appendChild(imageElement);
+  });
+</script>
+
+</html>

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # MongoDB service
+  mongodb:
+    image: mongo:latest
+    container_name: mongo
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"  # Expose MongoDB port
+
+  # Spring Boot application service
+  image-service:
+    image: image-service:latest
+    container_name: image-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mongodb
+    ports:
+      - "8080:8080"  # Expose your Spring Boot app's port
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/image-db
+
+# Volumes to persist MongoDB data
+volumes:
+  mongo-data:

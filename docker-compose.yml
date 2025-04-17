@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # MongoDB service
+  # MongoDB 
   mongodb:
     image: mongo:latest
     container_name: mongo
@@ -9,9 +9,9 @@ services:
     volumes:
       - mongo-data:/data/db
     ports:
-      - "27017:27017"  # Expose MongoDB port
+      - "27017:27017" 
 
-  # Spring Boot application service
+  # Spring Boot
   image-service:
     image: image-service:latest
     container_name: image-service
@@ -21,10 +21,16 @@ services:
     depends_on:
       - mongodb
     ports:
-      - "8080:8080"  # Expose your Spring Boot app's port
+      - "8080:8080" 
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/image-db
 
-# Volumes to persist MongoDB data
+# Automated tests
+  tests:
+    build: .
+    command: mvn test
+    depends_on:
+      - mongodb
+
 volumes:
   mongo-data:
